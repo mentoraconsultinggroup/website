@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentora Consulting Group</title>
+    
+    <!-- React and Babel CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+    
+    <!-- Reset styles -->
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        } 
+        html { 
+            scroll-behavior: smooth; 
+        } 
+        body { 
+            overflow-x: hidden; 
+        }
+        @media (max-width: 768px) {
+          .desktop-nav { display: none !important; }
+          .mobile-hamburger { display: flex !important; }
+          .services-grid { grid-template-columns: 1fr !important; }
+          .partners-grid { grid-template-columns: 1fr !important; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const COLORS = {
+          navy: "#1a3a5c",
+          orange: "#f5a623",
+          deepOrange: "#e8922a",
+          warmWhite: "#faf8f5",
+          cream: "#f5f0e8",
+          charcoal: "#2d2d2d",
+          slate: "#5a6478",
+          lightGray: "#e8e4de",
+        };
+
+        const scrollTo = (id) => {
+          document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        };
+
+        // ─── MENTORA LOGO ────────────────────────────────
+        function MentoraLogo({ height = 40, showText = true, lightText = false }) {
+          return (
+            <img
+              src="MCG_logo.png"
+              alt="Mentora Consulting Group"
+              height={height}
+              style={{ 
+                display: "block",
+                filter: lightText ? "brightness(0) invert(1)" : "none"
+              }}
+            />
+          );
+        }
+
+        // ─── LOGO ICON ONLY (for hero) ───────────────────────
+        function MentoraIcon({ size = 80 }) {
+          return (
+            <img
+              src="MCG_logo.png"
+              alt="Mentora Consulting Group"
+              width={size}
+              style={{ 
+                display: "block",
+                maxWidth: size,
+                height: "auto"
+              }}
+            />
+          );
+        }
+
+        // ─── NAVBAR ──────────────────────────────────────────
+        function Navbar() {
+          const [scrolled, setScrolled] = useState(false);
+          const [menuOpen, setMenuOpen] = useState(false);
+
+          useEffect(() => {
+            const h = () => setScrolled(window.scrollY > 60);
+            window.addEventListener("scroll", h);
+            return () => window.removeEventListener("scroll", h);
+          }, []);
+
+          const links = [
+            ["About", "about"],
+            ["Services", "services"],
+            ["Approach", "approach"],
+            ["Team", "team"],
+            ["Partners", "partners"],
+            ["Contact", "contact"],
+          ];
+
+          return (
+            <nav
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1000,
+                background: scrolled ? "rgba(26,39,68,0.97)" : "transparent",
+                backdropFilter: scrolled ? "blur(12px)" : "none",
+                transition: "all 0.4s ease",
+                padding: scrolled ? "10px 0" : "16px 0",
+              }}
+            >
+              <div
+                style={{
+                  maxWidth: 1200,
+                  margin: "0 auto",
+                  padding: "0 24px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ cursor: "pointer" }} onClick={() => scrollTo("hero")}>
+                  <MentoraLogo height={36} showText={true} lightText={true} />
+                </div>
+
+                <div style={{ display: "flex", gap: 32, alignItems: "center" }} className="desktop-nav">
+                  {links.map(([label, id]) => (
+                    <span
+                      key={id}
+                      onClick={() => scrollTo(id)}
+                      style={{
+                        color: "rgba(255,255,255,0.8)",
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 14,
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        transition: "color 0.2s",
+                        letterSpacing: "0.02em",
+                      }}
+                      onMouseEnter={(e) => (e.target.style.color = COLORS.orange)}
+                      onMouseLeave={(e) => (e.target.style.color = "rgba(255,255,255,0.8)")}
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+
+                <div
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  style={{ display: "none", flexDirection: "column", gap: 5, cursor: "pointer", padding: 8 }}
+                  className="mobile-hamburger"
+                >
+                  <div style={{ width: 24, height: 2, background: "#fff", borderRadius: 2, transform: menuOpen ? "rotate(45deg) translate(5px,5px)" : "none", transition: "0.3s" }} />
+                  <div style={{ width: 24, height: 2, background: "#fff", borderRadius: 2, opacity: menuOpen ? 0 : 1, transition: "0.3s" }} />
+                  <div style={{ width: 24, height: 2, background: "#fff", borderRadius: 2, transform: menuOpen ? "rotate(-45deg) translate(5px,-5px)" : "none", transition: "0.3s" }} />
+                </div>
+              </div>
+
+              {menuOpen && (
+                <div style={{ background: "rgba(26,39,68,0.98)", padding: "20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+                  {links.map(([label, id]) => (
+                    <span key={id} onClick={() => { scrollTo(id); setMenuOpen(false); }}
+                      style={{ color: "rgba(255,255,255,0.85)", fontFamily: "'DM Sans', sans-serif", fontSize: 16, cursor: "pointer" }}>
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </nav>
+          );
+        }
+
+        // ─── HERO ────────────────────────────────────────────
+        function Hero() {
+          const [visible, setVisible] = useState(false);
+          useEffect(() => { setTimeout(() => setVisible(true), 200); }, []);
+
+          return (
+            <section
+              id="hero"
+              style={{
+                minHeight: "100vh",
+                background: `linear-gradient(135deg, #0f1a30 0%, ${COLORS.navy} 40%, #1a2744 100%)`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
+                padding: "120px 24px 80px",
+              }}
+            >
+              <div style={{ position: "absolute", top: -120, right: -80, width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${COLORS.orange}30, transparent 70%)`, filter: "blur(60px)" }} />
+              <div style={{ position: "absolute", bottom: -100, left: -60, width: 300, height: 300, borderRadius: "50%", background: `radial-gradient(circle, ${COLORS.orange}20, transparent 70%)`, filter: "blur(50px)" }} />
+              <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0)", backgroundSize: "48px 48px" }} />
+
+              <div
+                style={{
+                  maxWidth: 900,
+                  textAlign: "center",
+                  position: "relative",
+                  zIndex: 1,
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? "translateY(0)" : "translateY(40px)",
+                  transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+                }}
+              >
+                <div style={{ display: "inline-block", padding: "6px 20px", borderRadius: 100, border: `1px solid ${COLORS.orange}60`, background: `${COLORS.orange}15`, marginBottom: 32 }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: COLORS.orange, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    Mentora Consulting Group
+                  </span>
+                </div>
+
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(40px, 7vw, 80px)", fontWeight: 700, color: "#fff", lineHeight: 1.08, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
+                  Academic Insight
+                  <br />
+                  <span style={{ color: COLORS.orange }}>to Technical</span>
+                  <br />
+                  Solutions
+                </h1>
+
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "clamp(16px, 2vw, 20px)", color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: 600, margin: "0 auto 48px" }}>
+                  We align deep academic expertise with focused application, converting insight into technical solutions crafted for meaningful outcomes.
+                </p>
+
+                <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+                  <button
+                    onClick={() => scrollTo("services")}
+                    style={{ padding: "16px 36px", background: COLORS.orange, color: "#fff", border: "none", borderRadius: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 15, cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s", boxShadow: `0 4px 24px ${COLORS.orange}40` }}
+                    onMouseEnter={(e) => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = `0 8px 32px ${COLORS.orange}60`; }}
+                    onMouseLeave={(e) => { e.target.style.transform = "translateY(0)"; e.target.style.boxShadow = `0 4px 24px ${COLORS.orange}40`; }}
+                  >
+                    Our Services
+                  </button>
+                  <button
+                    onClick={() => scrollTo("contact")}
+                    style={{ padding: "16px 36px", background: "transparent", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 15, cursor: "pointer", transition: "all 0.2s" }}
+                    onMouseEnter={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.5)"; e.target.style.background = "rgba(255,255,255,0.05)"; }}
+                    onMouseLeave={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.25)"; e.target.style.background = "transparent"; }}
+                  >
+                    Get in Touch
+                  </button>
+                </div>
+              </div>
+            </section>
+          );
+        }
+
+        // ─── ANIMATED SECTION ────────────────────────────────
+        function AnimatedSection({ children, id, bg = COLORS.warmWhite }) {
+          const ref = useRef(null);
+          const [vis, setVis] = useState(false);
+          useEffect(() => {
+            const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true); }, { threshold: 0.12 });
+            if (ref.current) obs.observe(ref.current);
+            return () => obs.disconnect();
+          }, []);
+          return (
+            <section id={id} ref={ref} style={{ padding: "100px 24px", background: bg, opacity: vis ? 1 : 0, transform: vis ? "translateY(0)" : "translateY(50px)", transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)" }}>
+              <div style={{ maxWidth: 1100, margin: "0 auto" }}>{children}</div>
+            </section>
+          );
+        }
+
+        // ─── SECTION HEADER ──────────────────────────────────
+        function SectionHeader({ tag, title, subtitle, light = false }) {
+          return (
+            <div style={{ marginBottom: 60, maxWidth: 650 }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: COLORS.orange, marginBottom: 12, display: "block" }}>{tag}</span>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(30px, 4vw, 46px)", fontWeight: 700, color: light ? "#fff" : COLORS.charcoal, lineHeight: 1.15, margin: "0 0 16px", letterSpacing: "-0.01em" }}>{title}</h2>
+              {subtitle && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 17, color: light ? "rgba(255,255,255,0.65)" : COLORS.slate, lineHeight: 1.7, margin: 0 }}>{subtitle}</p>}
+            </div>
+          );
+        }
+
+        // ─── ABOUT ───────────────────────────────────────────
+        function About() {
+          const pillars = [
+            { icon: "🎓", title: "Academic Rigor", desc: "Making advanced knowledge accessible, actionable, and valuable." },
+            { icon: "⚙️", title: "Technical Solutions", desc: "Bridging academia and applied innovation through targeted problem-solving." },
+            { icon: "🚀", title: "Practical Transformation", desc: "Transforming academic insight into practical, high-impact technical solutions." },
+          ];
+          return (
+            <AnimatedSection id="about" bg={COLORS.warmWhite}>
+              <SectionHeader tag="Our Mission" title="Where Research Meets Real-World Impact" subtitle="We are a consulting group that aligns deep academic expertise with focused application, converting insight into technical solutions crafted for meaningful outcomes." />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
+                {pillars.map((p, i) => (
+                  <div key={i} style={{ background: "#fff", borderRadius: 16, padding: "36px 28px", border: `1px solid ${COLORS.lightGray}`, transition: "transform 0.3s, box-shadow 0.3s", cursor: "default" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.06)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}>
+                    <div style={{ fontSize: 32, marginBottom: 16 }}>{p.icon}</div>
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 20, color: COLORS.charcoal, margin: "0 0 10px" }}>{p.title}</h3>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, color: COLORS.slate, lineHeight: 1.65, margin: 0 }}>{p.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </AnimatedSection>
+          );
+        }
+
+        // ─── SERVICES ────────────────────────────────────────
+        function Services() {
+          const [active, setActive] = useState(0);
+          const services = [
+            { tag: "01", title: "AI & Data Solutions", points: ["AI Business Automation — RPA, workflow automation, process re-engineering, smart contracts, AI agents", "Custom AI tools — chatbots, document processing, lead scoring, knowledge bases", "Data analytics pipelines and visualization dashboards", "LLM integration and prompt engineering for business workflows"], color: COLORS.orange },
+            { tag: "02", title: "IT & Cloud Consultation", points: ["GCP architecture design — Compute Engine, Storage, Networking, IAM", "Cloud security, firewalls, VPN, and access control advisory", "Database design, schema optimization, and performance tuning", "AI & automation readiness — preparing infrastructure for Vertex AI and ML workloads"], color: "#3b82f6" },
+            { tag: "03", title: "Training & Upskilling", points: ["AI Fundamentals & Process Improvement workshops (2-day format)", "Hands-on computational design, GIS intelligence, and Python for professionals", "Workflow design using Service Blueprint, Kanban, and process mapping", "AI-powered automation for HR, sales, and operations teams"], color: "#10b981" },
+            { tag: "04", title: "Research-Driven Consulting", points: ["AI maturity assessments and opportunity mapping", "ROI modeling for AI adoption initiatives", "Tool selection strategy — unbiased 'Buy vs. Build' advisory", "Strategic AI advisory and governance frameworks"], color: "#8b5cf6" },
+            { tag: "05", title: "Strategic Technology Advisory", points: ["Solution architecture review and blueprint validation", "Scalability assessments for growing data loads", "Security governance — DLP policies, AI ethics, compliance", "Sprint Zero discovery engagements (5-day deep dives)"], color: "#ec4899" },
+          ];
+          const s = services[active];
+
+          return (
+            <AnimatedSection id="services" bg="#fff">
+              <SectionHeader tag="Core Services" title="End-to-End AI & Technology Solutions" subtitle="From strategic advisory to hands-on implementation and training, we cover the full lifecycle of digital transformation." />
+              <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 0, borderRadius: 16, overflow: "hidden", border: `1px solid ${COLORS.lightGray}`, minHeight: 380 }} className="services-grid">
+                <div style={{ background: COLORS.navy, padding: "8px" }}>
+                  {services.map((sv, i) => (
+                    <div key={i} onClick={() => setActive(i)} style={{ padding: "16px 20px", borderRadius: 10, cursor: "pointer", background: active === i ? "rgba(255,255,255,0.1)" : "transparent", transition: "all 0.2s", marginBottom: 4 }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: sv.color, letterSpacing: "0.06em" }}>{sv.tag}</span>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: active === i ? 700 : 500, color: active === i ? "#fff" : "rgba(255,255,255,0.6)", marginTop: 4 }}>{sv.title}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ padding: "40px 44px", background: COLORS.warmWhite }}>
+                  <div style={{ display: "inline-block", width: 48, height: 4, background: s.color, borderRadius: 2, marginBottom: 20 }} />
+                  <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, color: COLORS.charcoal, margin: "0 0 24px" }}>{s.title}</h3>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {s.points.map((p, i) => (
+                      <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                        <div style={{ minWidth: 8, height: 8, borderRadius: "50%", background: s.color, marginTop: 7 }} />
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, color: COLORS.slate, lineHeight: 1.6 }}>{p}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </AnimatedSection>
+          );
+        }
+
+        // ─── APPROACH ────────────────────────────────────────
+        function Approach() {
+          const steps = [
+            { num: "01", title: "Understand", desc: "Analyze the context & needs" },
+            { num: "02", title: "Synthesize", desc: "Apply academic insight" },
+            { num: "03", title: "Transform", desc: "Build technical solutions" },
+            { num: "04", title: "Deliver", desc: "Implement with clarity & impact" },
+          ];
+          return (
+            <AnimatedSection id="approach" bg={COLORS.navy}>
+              <SectionHeader tag="Our Approach" title="From Insight to Impact" subtitle="A systematic four-phase methodology that ensures every engagement delivers measurable outcomes." light />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 24 }}>
+                {steps.map((s, i) => (
+                  <div key={i} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: "32px 24px", position: "relative", overflow: "hidden", transition: "all 0.3s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.borderColor = `${COLORS.orange}60`; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 48, fontWeight: 800, color: `${COLORS.orange}20`, position: "absolute", top: 12, right: 16, lineHeight: 1 }}>{s.num}</span>
+                    <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 22, color: "#fff", margin: "0 0 8px" }}>{s.title}</h4>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 56, padding: "32px 36px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14 }}>
+                <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 16, color: COLORS.orange, letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 20px" }}>Our Strengths</h4>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+                  {["Academic rigor with business-ready execution", "Tailored solutions for specific needs", "Deep experience across education, AI, and innovation", "Collaborative, clarity-first communication", "Agile delivery and measurable outcomes"].map((s, i) => (
+                    <span key={i} style={{ padding: "8px 18px", borderRadius: 100, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.7)" }}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            </AnimatedSection>
+          );
+        }
+
+        // ─── TEAM ────────────────────────────────────────────
+        function Team() {
+          const members = [
+            { name: "Asst. Prof. Dr. Pakpoom Buabthong", role: "Partner — AI & Data Science", areas: ["AI Automation", "Information Retrieval & Chatbot", "Data Analytics"], education: "Ph.D., Materials Science & Computer Science — Caltech", experience: ["Director, Nakhon Ratchasima Office of Lifelong Learning", "Instructor, True Digital Academy", "Technical Consultant, KBTG", "Adjunct Professor, CMKL University & KMUTT"], accent: COLORS.orange },
+            { name: "Dr. Jidapa Thadajarassiri", role: "Partner — Deep Learning & Vision AI", areas: ["Deep Learning", "Computer Vision", "Data Analytics"], education: "Ph.D., Data Science — WPI", experience: ["Professor, Srinakharinwirot University", "Adjunct Professor, CMKL University & KMUTT", "Technical Consultant, BITSOFT Co., Ltd."], accent: COLORS.deepOrange },
+            { name: "Dr. Warisa Ketphan", role: "Partner — Project Management", areas: ["Project Management & Delivery", "Cross-functional Planning", "Research & Data Collection"], education: "Ph.D., Veterinary Hygiene — TUAT", experience: ["Researcher, National Institute of Animal Health"], accent: COLORS.navy },
+          ];
+          return (
+            <AnimatedSection id="team" bg={COLORS.warmWhite}>
+              <SectionHeader tag="Our Team" title="Led by Academics, Built for Business" subtitle="Our founding team combines doctoral-level expertise with hands-on industry experience across AI, data science, and project delivery." />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
+                {members.map((m, i) => (
+                  <div key={i} style={{ background: "#fff", borderRadius: 16, padding: "32px 28px", border: `1px solid ${COLORS.lightGray}`, transition: "transform 0.3s, box-shadow 0.3s", position: "relative", overflow: "hidden" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.06)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}>
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: m.accent }} />
+                    <div style={{ width: 56, height: 56, borderRadius: 14, background: `${m.accent}15`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20, fontSize: 24, fontWeight: 800, color: m.accent, fontFamily: "'DM Sans', sans-serif" }}>
+                      {m.name.split(" ").pop()[0]}
+                    </div>
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 18, color: COLORS.charcoal, margin: "0 0 4px" }}>{m.name}</h3>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: m.accent, fontWeight: 600, margin: "0 0 16px" }}>{m.role}</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
+                      {m.areas.map((a, j) => (
+                        <span key={j} style={{ padding: "4px 12px", borderRadius: 100, background: `${m.accent}10`, fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: m.accent }}>{a}</span>
+                      ))}
+                    </div>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: COLORS.slate, lineHeight: 1.5, margin: "0 0 12px" }}>{m.education}</p>
+                    <div style={{ borderTop: `1px solid ${COLORS.lightGray}`, paddingTop: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+                      {m.experience.map((e, j) => (
+                        <span key={j} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: COLORS.slate, lineHeight: 1.5 }}>→ {e}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </AnimatedSection>
+          );
+        }
+
+        // ─── PARTNERS ────────────────────────────────────────
+        function Partners() {
+          const training = ["CP Group / True", "PEA", "Ratch Group", "GC (PTT Global Chemical)", "DOAE", "True Digital Academy", "Krungthai Bank", "Eastspring Investments", "Khon Kaen University"];
+          const technical = ["True Digital Academy", "KBTG", "CMKL University", "NRRU", "Srinakharinwirot University", "Kasetsart University", "SCB", "Ascend / TrueMoney", "WPI"];
+          const renderPartners = (list, accent) => list.map((p, i) => (
+            <div key={i} style={{ padding: "12px 20px", borderRadius: 10, background: "#fff", border: `1px solid ${COLORS.lightGray}`, fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: COLORS.charcoal, transition: "all 0.2s", cursor: "default" }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = accent; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = COLORS.lightGray; e.currentTarget.style.transform = "translateY(0)"; }}>
+              {p}
+            </div>
+          ));
+
+          return (
+            <AnimatedSection id="partners" bg="#fff">
+              <SectionHeader tag="Our Partners" title="Trusted by Leading Organizations" subtitle="We partner with enterprises, universities, and government agencies across Thailand to deliver impactful AI and technology solutions." />
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }} className="partners-grid">
+                <div>
+                  <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 14, color: COLORS.orange, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 16 }}>In-house Training</h4>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>{renderPartners(training, COLORS.orange)}</div>
+                </div>
+                <div>
+                  <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 14, color: COLORS.navy, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 16 }}>Technical Solutions</h4>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>{renderPartners(technical, COLORS.navy)}</div>
+                </div>
+              </div>
+            </AnimatedSection>
+          );
+        }
+
+        // ─── CONTACT ─────────────────────────────────────────
+        function Contact() {
+          const contacts = [
+            { name: "Pakpoom Buabthong", email: "pakpoom.b@mentoraconsultinggroup.com", phone: "(+66) 64-969-4985" },
+            { name: "Warisa Ketphan", email: "warisa.k@mentoraconsultinggroup.com", phone: "(+66) 61-298-8247" },
+          ];
+          return (
+            <AnimatedSection id="contact" bg={COLORS.cream}>
+              <SectionHeader tag="Get in Touch" title="Let's Build Something Together" subtitle="Ready to transform your business with AI? Reach out to our team for a consultation." />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
+                {contacts.map((c, i) => (
+                  <div key={i} style={{ background: "#fff", borderRadius: 16, padding: "32px 28px", border: `1px solid ${COLORS.lightGray}` }}>
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 20, color: COLORS.charcoal, margin: "0 0 16px" }}>{c.name}</h3>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontSize: 16 }}>✉</span>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: COLORS.slate, wordBreak: "break-all" }}>{c.email}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontSize: 16 }}>☎</span>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: COLORS.slate }}>{c.phone}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </AnimatedSection>
+          );
+        }
+
+        // ─── FOOTER ──────────────────────────────────────────
+        function Footer() {
+          return (
+            <footer style={{ background: COLORS.navy, padding: "48px 24px 40px", textAlign: "center" }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+                <MentoraLogo height={34} showText={true} lightText={true} />
+              </div>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.4)" }}>
+                © 2025 Mentora Consulting Group Co., Ltd. All rights reserved.
+              </div>
+            </footer>
+          );
+        }
+
+        // ─── MAIN APP ────────────────────────────────────────
+        function MentoraWebsite() {
+          return (
+            <div style={{ fontFamily: "'DM Sans', sans-serif", margin: 0, padding: 0, background: COLORS.warmWhite, overflowX: "hidden" }}>
+              <Navbar />
+              <Hero />
+              <About />
+              <Services />
+              <Approach />
+              <Team />
+              <Partners />
+              <Contact />
+              <Footer />
+            </div>
+          );
+        }
+
+        // ─── RENDER ──────────────────────────────────────────
+        const { createRoot } = ReactDOM;
+        const root = createRoot(document.getElementById('root'));
+        root.render(<MentoraWebsite />);
+    </script>
+</body>
+</html>
